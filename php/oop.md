@@ -74,12 +74,12 @@ The above example will output:
 
 A class can inherit the methods and properties of another class by using the keyword `extends` in the class declaration. It is not possible to extend multiple classes; a class can only inherit from one base class.
 The inherited methods and properties can be overridden by redeclaring them with the same name defined in the parent class. However, if the parent class has defined a method as `final`, that method may not be overridden. It is possible to access the overridden methods or static properties by referencing them with `parent::`.
-*When overriding methods, the parameter signature should remain the same or PHP will generate an E_STRICT level error.* This does not apply to the constructor, which allows overriding with different parameters.
+**When overriding methods, the parameter signature should remain the same or PHP will generate an E_STRICT level error.** This does not apply to the constructor, which allows overriding with different parameters.
 
 Since PHP 5.5, the `class` keyword is also used for class name resolution. You can get a string containing the fully qualified name of the ClassName class by using `ClassName::class`. This is particularly useful with namespaced classes.
 
 
-*What is the difference between  $this  and  self ?*
+**What is the difference between  $this  and  self ?**
 
 Inside a class definition, $this refers to the current object, while  self  refers to the current class.
 

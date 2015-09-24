@@ -4,7 +4,7 @@
 ### Links
 [http://php.net/manual/en/language.oop5.php](http://php.net/manual/en/language.oop5.php)
 
-### Info
+### Basics
 
 Starting with PHP 5, the object model was rewritten to allow for better performance and more features. This was a major change from PHP 4. PHP 5 has a full object model.
 Among the features in PHP 5 are the inclusions of visibility, abstract and final classes and methods, additional magic methods, interfaces, cloning and typehinting.
@@ -86,3 +86,100 @@ Inside a class definition, $this refers to the current object, while  self  refe
 It is necessary to refer to a class element using  self ,
 and refer to an object element using  $this .
 Note also how an object variable must be preceded by a keyword in its definition.
+
+### Properties
+
+Class member variables are called "properties". You may also see them referred to using other terms such as "attributes" or "fields", but for the purposes of this reference we will use "properties". They are defined by using one of the keywords `public`, `protected`, or `private`, followed by a normal variable declaration. This declaration may include an initialization, but this initialization must be a constant value--that is, it must be able to be evaluated at compile time and must not depend on run-time information in order to be evaluated.
+```
+In order to maintain backward compatibility with PHP 4, PHP 5 will still accept the use of the keyword var in property declarations instead of (or in addition to) public, protected, or private. However, var is no longer required. In versions of PHP from 5.0 to 5.1.3, the use of var was considered deprecated and would issue an E_STRICT warning, but since PHP 5.1.3 it is no longer deprecated and does not issue the warning.
+If you declare a property using var instead of one of public, protected, or private, then PHP 5 will treat the property as if it had been declared as public
+```
+
+Within class methods non-static properties may be accessed by using `->` (Object Operator): `$this->property` (where property is the name of the property). Static properties are accessed by using the `::` (Double Colon): `self::$property`.
+
+```php
+<?php
+class SimpleClass
+{
+   // invalid property declarations:
+   public $var1 = 'hello ' . 'world';
+   public $var2 = <<<EOD
+hello world
+EOD;
+   public $var3 = 1+2;
+   public $var4 = self::myStaticMethod();
+   public $var5 = $myVar;
+
+   // valid property declarations:
+   public $var6 = myConstant;
+   public $var7 = array(true, false);
+
+   // This is allowed only in PHP 5.3.0 and later.
+   public $var8 = <<<'EOD'
+hello world
+EOD;
+}
+?>
+```
+
+### Constants
+
+It is possible to define constant values on a per-class basis remaining the same and unchangeable. Constants differ from normal variables in that you don't use the $ symbol to declare or use them.
+
+The value must be a constant expression, not (for example) a variable, a property, or a function call.
+
+*It's also possible for interfaces to have constants.*
+
+As of PHP 5.3.0, it's possible to reference the class using a variable. The variable's value can not be a keyword (e.g. self, parent and static).
+```php
+<?php
+class MyClass
+{
+    const CONSTANT = 'constant value';
+
+    function showConstant() {
+        echo  self::CONSTANT . "\n";
+    }
+}
+
+echo MyClass::CONSTANT . "\n";
+
+$classname = "MyClass";
+echo $classname::CONSTANT . "\n"; // As of PHP 5.3.0
+
+$class = new MyClass();
+$class->showConstant();
+
+echo $class::CONSTANT."\n"; // As of PHP 5.3.0
+?>
+```
+
+Static data example
+```php
+<?php
+class foo {
+    // As of PHP 5.3.0
+    const BAR = <<<'EOT'
+bar
+EOT;
+    // As of PHP 5.3.0
+    const BAZ = <<<EOT
+baz
+EOT;
+}
+?>
+```
+Constant expression example
+```php
+<?php
+const ONE = 1;
+
+class foo {
+    // As of PHP 5.6.0
+    const TWO = ONE * 2;
+    const THREE = ONE + self::TWO;
+    const SENTENCE = 'The value of THREE is '.self::THREE;
+}
+?>
+It is possible to provide a scalar expression involving numeric and string literals and/or constants in context of a class constant.
+```

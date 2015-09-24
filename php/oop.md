@@ -256,7 +256,8 @@ Like constructors, parent destructors will not be called implicitly by the engin
 The destructor will be called even if script execution is stopped using `exit()`. Calling `exit()` in a destructor will prevent the remaining shutdown routines from executing.
 
 **Note:
-Destructors called during the script shutdown have HTTP headers already sent. The working directory in the script shutdown phase can be different with some SAPIs (e.g. Apache).
-Note:
+Destructors called during the script shutdown have HTTP headers already sent. The working directory in the script shutdown phase can be different with some SAPIs (e.g. Apache).**
+
+**Note:
 Attempting to throw an exception from a destructor (called in the time of script termination) causes a fatal error.**
 

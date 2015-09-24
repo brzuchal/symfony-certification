@@ -1,7 +1,7 @@
 # symfony-certification
 
 - PHP
-  - Object Oriented Programming
+  - [Object Oriented Programming](php/oop.md)
   - Namespaces
   - Interfaces
   - Anonymous functions and closures

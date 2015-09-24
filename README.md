@@ -1,1 +1,112 @@
 # symfony-certification
+
+- PHP
+  - Object Oriented Programming
+  - Namespaces
+  - Interfaces
+  - Anonymous functions and closures
+  - Abstract classes
+- HTTP
+  - Client / Server interaction
+  - HTTP request
+  - HTTP response
+  - Status codes
+- Symfony Architecture
+  - Symfony Standard Edition
+  - Components
+  - Bundles
+  - Bridges
+  - Configuration
+  - Code organization
+  - Request handling
+- Standardization
+  - Naming conventions
+  - Coding standards
+  - Third-party libraries integration
+  - Composer packages handling
+  - Development best practices
+  - Framework overloading
+- The bundles
+  - Naming conventions
+  - Code organization
+  - The controllers
+  - The views
+  - The resources
+- The controllers
+  - Naming conventions
+  - The request
+  - The response
+  - The cookies
+  - The session
+  - HTTP redirects
+  - Internal redirects
+  - Generate 404 pages
+- The Routing
+  - Configuration (YAML, XML, PHP & annotations)
+  - Restrict URL parameters
+  - Set default values to URL parameters
+  - Generate URL parameters
+  - Trigger redirects
+- Templating with Twig
+  - Auto escaping
+  - Template inheritance
+  - Global variables
+  - Filters and functions
+  - Template includes
+  - Loops and conditions
+  - URLs generation
+  - Controller rendering
+  - Translations
+- Forms
+  - Forms creation
+  - Forms handling
+  - Form types
+  - Forms rendering with Twig
+  - CSRF protection
+- Data Validation
+  - PHP object validation
+  - Built-in validation constraints
+  - Validation scopes
+  - Validation groups
+- Dependency Injection
+  - Service container
+  - Built-in services
+  - Configuration parameters
+  - Services registration
+  - Tags
+  - Semantic configuration
+- Security
+  - Authentication
+  - Authorization
+  - Configuration
+  - Providers
+  - Firewalls
+  - Users
+  - Passwords encoders
+  - Roles
+  - Access Control Rules
+- HTTP Caching
+  - Cache types (browser, proxies and reverse-proxies)
+  - Expiration (Expires, Cache-Control)
+  - Validation (ETag, Last-Modified)
+  - Client side caching
+  - Server side caching
+  - Edge Side Includes
+- Console
+  - Built-in commands
+  - Custom commands
+  - Configuration
+  - Options and arguments
+  - Input and Output objects
+- Automated tests
+  - Unit tests with PHPUnit
+  - Functional tests with PHPUnit
+  - Client object
+  - Crawler object
+  - Profile object
+  - Framework objects access
+  - Client configuration
+  - Request and response objects introspection
+- Miscellaneous
+  - Error handling
+  - Code debug

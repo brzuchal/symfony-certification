@@ -181,5 +181,82 @@ class foo {
     const SENTENCE = 'The value of THREE is '.self::THREE;
 }
 ?>
-It is possible to provide a scalar expression involving numeric and string literals and/or constants in context of a class constant.
 ```
+It is possible to provide a scalar expression involving numeric and string literals and/or constants in context of a class constant.
+
+### Autoloading
+
+Many developers writing object-oriented applications create one PHP source file per class definition. One of the biggest annoyances is having to write a long list of needed includes at the beginning of each script (one for each class).
+
+In PHP 5, this is no longer necessary. You may define an `__autoload()` function which is automatically called in case you are trying to use a class/interface which hasn't been defined yet. By calling this function the scripting engine is given a last chance to load the class before PHP fails with an error.
+`spl_autoload_register()` provides a more flexible alternative for autoloading classes. For this reason, using `__autoload()` is discouraged and may be deprecated or removed in the future.
+
+### Constructors
+
+PHP 5 allows developers to declare constructor methods for classes. Classes which have a constructor method call this method on each newly-created object, so it is suitable for any initialization that the object may need before it is used.
+Note: Parent constructors are not called implicitly if the child class defines a constructor. In order to run a parent constructor, a call to `parent::__construct()` within the child constructor is required. If the child does not define a constructor then it may be inherited from the parent class just like a normal class method (if it was not declared as private).
+
+```php
+<?php
+class BaseClass {
+   function __construct() {
+       print "In BaseClass constructor\n";
+   }
+}
+
+class SubClass extends BaseClass {
+   function __construct() {
+       parent::__construct();
+       print "In SubClass constructor\n";
+   }
+}
+
+class OtherSubClass extends BaseClass {
+    // inherits BaseClass's constructor
+}
+
+// In BaseClass constructor
+$obj = new BaseClass();
+
+// In BaseClass constructor
+// In SubClass constructor
+$obj = new SubClass();
+
+// In BaseClass constructor
+$obj = new OtherSubClass();
+?>
+```
+
+For backwards compatibility with PHP 3 and 4, if PHP cannot find a __construct() function for a given class, and the class did not inherit one from a parent class, it will search for the old-style constructor function, by the name of the class. Effectively, it means that the only case that would have compatibility issues is if the class had a method named __construct() which was used for different semantics.
+
+Warning
+Old style constructors are DEPRECATED in PHP 7.0, and will be removed in a future version. You should always use __construct() in new code.
+Unlike with other methods, PHP will not generate an E_STRICT level error message when `__construct()` is overridden with different parameters than the parent `__construct()` method has.
+
+As of PHP 5.3.3, methods with the same name as the last element of a namespaced class name will no longer be treated as constructor. This change doesn't affect non-namespaced classes.
+
+Constructors in namespaced classes
+```php
+<?php
+namespace Foo;
+class Bar {
+    public function Bar() {
+        // treated as constructor in PHP 5.3.0-5.3.2
+        // treated as regular method as of PHP 5.3.3
+    }
+}
+?>
+```
+### Destructors
+
+PHP 5 introduces a destructor concept similar to that of other object-oriented languages, such as C++. The destructor method will be called as soon as there are no other references to a particular object, or in any order during the shutdown sequence.
+
+Like constructors, parent destructors will not be called implicitly by the engine. In order to run a parent destructor, one would have to explicitly call `parent::__destruct()` in the destructor body. Also like constructors, a child class may inherit the parent's destructor if it does not implement one itself.
+
+The destructor will be called even if script execution is stopped using `exit()`. Calling `exit()` in a destructor will prevent the remaining shutdown routines from executing.
+
+**Note:
+Destructors called during the script shutdown have HTTP headers already sent. The working directory in the script shutdown phase can be different with some SAPIs (e.g. Apache).
+Note:
+Attempting to throw an exception from a destructor (called in the time of script termination) causes a fatal error.**
+

@@ -22,7 +22,7 @@ In the class context, it is possible to create a new object by `new self` and `n
 When assigning an already created instance of a class to a new variable, the new variable will access the same instance as the object that was assigned.
 This behaviour is the same when passing instances to a function. A copy of an already created object can be made by cloning it.
 
-...
+```
 <?php
 
 $instance = new SimpleClass();
@@ -38,11 +38,11 @@ var_dump($instance);
 var_dump($reference);
 var_dump($assigned);
 ?>
-...
+```
 
 PHP 5.3.0 introduced a couple of new ways to create instances of an object:
 
-...
+```
 <?php
 class Test
 {
@@ -65,7 +65,7 @@ var_dump($obj3 instanceof Test);
 $obj4 = Child::getNew();
 var_dump($obj4 instanceof Child);
 ?>
-...
+```
 The above example will output:
 
 > bool(true)

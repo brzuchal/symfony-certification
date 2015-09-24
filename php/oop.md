@@ -261,3 +261,170 @@ Destructors called during the script shutdown have HTTP headers already sent. Th
 **Note:
 Attempting to throw an exception from a destructor (called in the time of script termination) causes a fatal error.**
 
+### Visibility
+
+The visibility of a property or method can be defined by prefixing the declaration with the keywords `public`, `protected` or `private`.
+Class members declared `public` can be accessed everywhere.
+Members declared `protected` can be accessed only within the class itself and by inherited classes.
+Members declared as `private` may only be accessed by the class that defines the member.
+```php
+<?php
+/**
+ * Define MyClass
+ */
+class MyClass
+{
+    public $public = 'Public';
+    protected $protected = 'Protected';
+    private $private = 'Private';
+
+    function printHello()
+    {
+        echo $this->public;
+        echo $this->protected;
+        echo $this->private;
+    }
+}
+
+$obj = new MyClass();
+echo $obj->public; // Works
+echo $obj->protected; // Fatal Error
+echo $obj->private; // Fatal Error
+$obj->printHello(); // Shows Public, Protected and Private
+
+
+/**
+ * Define MyClass2
+ */
+class MyClass2 extends MyClass
+{
+    // We can redeclare the public and protected method, but not private
+    protected $protected = 'Protected2';
+
+    function printHello()
+    {
+        echo $this->public;
+        echo $this->protected;
+        echo $this->private;
+    }
+}
+
+$obj2 = new MyClass2();
+echo $obj2->public; // Works
+echo $obj2->protected; // Fatal Error
+echo $obj2->private; // Undefined
+$obj2->printHello(); // Shows Public, Protected2, Undefined
+
+?>
+```
+
+**Objects of the same type will have access to each others private and protected members even though they are not the same instances. This is because the implementation specific details are already known when inside those objects.**
+```php
+<?php
+class Test
+{
+    private $foo;
+
+    public function __construct($foo)
+    {
+        $this->foo = $foo;
+    }
+
+    private function bar()
+    {
+        echo 'Accessed the private method.';
+    }
+
+    public function baz(Test $other)
+    {
+        // We can change the private property:
+        $other->foo = 'hello';
+        var_dump($other->foo);
+
+        // We can also call the private method:
+        $other->bar();
+    }
+}
+
+$test = new Test('test');
+
+$test->baz(new Test('other'));
+?>
+```
+
+The manual says that "Private limits visibility only to the class that defines the item". That means extended children classes do not see the private methods of parent class and vice versa also.
+
+As a result, parents and children can have different implementations of the "same" private methods, depending on where you call them (e.g. parent or child class instance). Why? Because private methods are visible only for the class that defines them and the child class does not see the parent's private methods. If the child doesn't see the parent's private methods, the child can't override them. Scopes are different. In other words -- each class has a private set of private variables that no-one else has access to.
+
+A sample demonstrating the percularities of private methods when extending classes:
+```php
+<?php
+abstract class base {
+    public function inherited() {
+        $this->overridden();
+    }
+    private function overridden() {
+        echo 'base';
+    }
+}
+
+class child extends base {
+    private function overridden() {
+        echo 'child';
+    }
+}
+
+$test = new child();
+$test->inherited();
+?>
+```
+Output will be "base".
+
+If you want the inherited methods to use overridden functionality in extended classes but public sounds too loose, use protected. That's what it is for:)
+
+A sample that works as intended:
+```php
+<?php
+abstract class base {
+    public function inherited() {
+        $this->overridden();
+    }
+    protected function overridden() {
+        echo 'base';
+    }
+}
+
+class child extends base {
+    protected function overridden() {
+        echo 'child';
+    }
+}
+
+$test = new child();
+$test->inherited();
+?>
+```
+Output will be "child".
+
+A class A static public function can access to class A private function :
+```php
+<?php
+class A {
+    private function foo()
+    {
+        print("bar");
+    }
+
+    static public function bar($a)
+    {
+        $a->foo();
+    }
+}
+
+$a = new A();
+
+A::bar($a);
+?>
+
+It's working.
+```

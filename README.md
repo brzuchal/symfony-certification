@@ -2,7 +2,7 @@
 
 - PHP
   - [Object Oriented Programming](php/oop.md)
-  - Namespaces
+  - [Namespaces](php/namespaces.md)
   - Interfaces
   - Anonymous functions and closures
   - Abstract classes

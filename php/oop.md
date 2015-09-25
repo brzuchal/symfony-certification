@@ -15,8 +15,46 @@ The class name can be any valid label, provided it is not a PHP reserved word. A
 A class may contain its own constants, variables (called "properties"), and functions (called "methods").
 
 The pseudo-variable `$this` is available when a method is called from within an object context. $this is a reference to the calling object (usually the object to which the method belongs, but possibly another object, if the method is called statically from the context of a secondary object).
-To create an instance of a class, the new keyword must be used. An object will always be created unless the object has a constructor defined that throws an exception on error. Classes should be defined before instantiation (and in some cases this is a requirement).
+To create an instance of a class, the `new` keyword must be used. An object will always be created unless the object has a constructor defined that throws an exception on error. Classes should be defined before instantiation (and in some cases this is a requirement).
 If a string containing the name of a class is used with new, a new instance of that class will be created. If the class is in a namespace, its fully qualified name must be used when doing this.
+
+```php
+<?php
+class A
+{
+    function foo()
+    {
+        if (isset($this)) {
+            echo '$this is defined (';
+            echo get_class($this);
+            echo ")\n";
+        } else {
+            echo "\$this is not defined.\n";
+        }
+    }
+}
+
+class B
+{
+    function bar()
+    {
+        // Note: the next line will issue a warning if E_STRICT is enabled.
+        A::foo();
+    }
+}
+
+$a = new A();
+$a->foo();
+
+// Note: the next line will issue a warning if E_STRICT is enabled.
+A::foo();
+$b = new B();
+$b->bar();
+
+// Note: the next line will issue a warning if E_STRICT is enabled.
+B::bar();
+?>
+```
 
 In the class context, it is possible to create a new object by `new self` and `new parent`.
 When assigning an already created instance of a class to a new variable, the new variable will access the same instance as the object that was assigned.
@@ -428,3 +466,203 @@ A::bar($a);
 
 It's working.
 ```
+
+This has already been noted here, but there was no clear example. Methods defined in a parent class can NOT access private methods defined in a class which inherits from them. They can access protected, though.
+
+Example:
+```php
+<?php
+
+class ParentClass {
+
+    public function execute($method) {
+        $this->$method();
+    }
+
+}
+
+class ChildClass extends ParentClass {
+
+    private function privateMethod() {
+        echo "hi, i'm private";
+    }
+
+    protected function protectedMethod() {
+        echo "hi, i'm protected";
+    }
+
+}
+
+$object = new ChildClass();
+
+$object->execute('protectedMethod');
+
+$object->execute('privateMethod');
+
+?>
+```
+Output:
+```
+hi, i'm protected
+Fatal error: Call to private method ChildClass::privateMethod() from context 'ParentClass' in index.php on line 6
+```
+In an early approach this may seem unwanted behaviour but it actually makes sense. Private can only be accessed by the class which defines, neither parent nor children classes.
+
+
+### Inheritance
+nheritance is a well-established programming principle, and PHP makes use of this principle in its object model. This principle will affect the way many classes and objects relate to one another.
+
+For example, when you extend a class, the subclass inherits all of the public and protected methods from the parent class. Unless a class overrides those methods, they will retain their original functionality.
+
+This is useful for defining and abstracting functionality, and permits the implementation of additional functionality in similar objects without the need to reimplement all of the shared functionality.
+
+### Scope Resolution Operator (::)
+
+The Scope Resolution Operator (also called `Paamayim Nekudotayim`) or in simpler terms, the double colon, is a token that allows access to static, constant, and overridden properties or methods of a class.
+
+When referencing these items from outside the class definition, use the name of the class.
+
+As of PHP 5.3.0, it's possible to reference the class using a variable. The variable's value can not be a keyword (e.g. self, parent and static).
+
+```php
+<?php
+class MyClass {
+    const CONST_VALUE = 'A constant value';
+}
+
+$classname = 'MyClass';
+echo $classname::CONST_VALUE; // As of PHP 5.3.0
+
+echo MyClass::CONST_VALUE;
+?>
+```
+Three special keywords self, parent and static are used to access properties or methods from inside the class definition.
+
+```php
+<?php
+class OtherClass extends MyClass
+{
+    public static $my_static = 'static var';
+
+    public static function doubleColon() {
+        echo parent::CONST_VALUE . "\n";
+        echo self::$my_static . "\n";
+    }
+}
+
+$classname = 'OtherClass';
+echo $classname::doubleColon(); // As of PHP 5.3.0
+
+OtherClass::doubleColon();
+?>
+```
+
+When an extending class overrides the parents definition of a method, PHP will not call the parent's method. It's up to the extended class on whether or not the parent's method is called. This also applies to Constructors and Destructors, Overloading, and Magic method definitions.
+```php
+<?php
+class MyClass
+{
+    protected function myFunc() {
+        echo "MyClass::myFunc()\n";
+    }
+}
+
+class OtherClass extends MyClass
+{
+    // Override parent's definition
+    public function myFunc()
+    {
+        // But still call the parent function
+        parent::myFunc();
+        echo "OtherClass::myFunc()\n";
+    }
+}
+
+$class = new OtherClass();
+$class->myFunc();
+?>
+```
+
+### static keyword
+Declaring class properties or methods as static makes them accessible without needing an instantiation of the class. A property declared as static cannot be accessed with an instantiated class object (though a static method can).
+
+For compatibility with PHP 4, if no visibility declaration is used, then the property or method will be treated as if it was declared as public.
+
+Because static methods are callable without an instance of the object created, the pseudo-variable `$this` is not available inside the method declared as static.
+```php
+<?php
+class Foo {
+    public static function aStaticMethod() {
+        // ...
+    }
+}
+
+Foo::aStaticMethod();
+$classname = 'Foo';
+$classname::aStaticMethod(); // As of PHP 5.3.0
+?>
+```
+
+**Static properties cannot be accessed through the object using the arrow operator `->`.**
+
+Like any other PHP static variable, static properties may only be initialized using a literal or constant before PHP 5.6; expressions are not allowed. In PHP 5.6 and later, the same rules apply as const expressions: some limited expressions are possible, provided they can be evaluated at compile time.
+
+As of PHP 5.3.0, it's possible to reference the class using a variable. The variable's value cannot be a keyword (e.g. self, parent and static).
+
+```php
+<?php
+class Foo
+{
+    public static $my_static = 'foo';
+
+    public function staticValue() {
+        return self::$my_static;
+    }
+}
+
+class Bar extends Foo
+{
+    public function fooStatic() {
+        return parent::$my_static;
+    }
+}
+
+
+print Foo::$my_static . "\n";
+
+$foo = new Foo();
+print $foo->staticValue() . "\n";
+print $foo->my_static . "\n";      // Undefined "Property" my_static
+
+print $foo::$my_static . "\n";
+$classname = 'Foo';
+print $classname::$my_static . "\n"; // As of PHP 5.3.0
+
+print Bar::$my_static . "\n";
+$bar = new Bar();
+print $bar->fooStatic() . "\n";
+?>
+```
+
+Inheritance with the static elements is a nightmare in php. Consider the following code:
+```php
+<?php
+class BaseClass{
+    public static $property;
+}
+
+class DerivedClassOne extends BaseClass{
+}
+
+class DerivedClassTwo extends BaseClass{
+}
+
+DerivedClassOne::$property = "foo";
+DerivedClassTwo::$property = "bar";
+
+echo DerivedClassOne::$property; //one would naively expect "foo"...
+?>
+```
+What would you expect as an output? "foo"? wrong. It is "bar"!!! Static variables are not inherited, they point to the BaseClass::$property.
+
+**At this point I think it is a big pity inheritance does not work in case of static variables/methods. Keep this in mind and save your time when debugging.**
